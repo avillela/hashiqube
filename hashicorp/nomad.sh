@@ -1,10 +1,11 @@
 #!/bin/bash
 
 function nomad-install() {
-sudo DEBIAN_FRONTEND=noninteractive apt-get --assume-yes install curl unzip jq
+sudo DEBIAN_FRONTEND=noninteractive apt-get --assume-yes install curl unzip jq mysql-client
 yes | sudo docker system prune -a
 yes | sudo docker system prune --volumes
 mkdir -p /etc/nomad
+sudo mkdir -p /opt/mysql/data
 cat <<EOF | sudo tee /etc/nomad/server.conf
 data_dir  = "/var/lib/nomad"
 
@@ -34,6 +35,11 @@ client {
   # https://github.com/hashicorp/nomad/issues/5562
   options = {
     "docker.volumes.enabled" = true
+  }
+
+  host_volume "mysql" {
+    path      = "/opt/mysql/data"
+    read_only = false
   }
 }
 
@@ -130,8 +136,8 @@ cd /vagrant/hashicorp/nomad/jobs;
 
 
 # Traefik Job and sample app (see: https://learn.hashicorp.com/tutorials/nomad/load-balancing-traefik)
-nomad job run traefik.nomad
-
+nomad job run -detach traefik.nomad
+nomad job run -detach my-sql.nomad
 }
 
 nomad-install

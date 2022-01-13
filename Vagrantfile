@@ -23,7 +23,7 @@ vbox_config = [
 machines = [
   {
     :name => "hashiqube.#{fqdn}",
-    :ip => '192.168.56.100',
+    :ip => '192.168.56.192',
     :ssh_port => '2255',
     :vbox_config => vbox_config,
     :synced_folders => [
@@ -57,8 +57,10 @@ Vagrant::configure("2") do |config|
       if machines.size == 1 # only expose these ports if 1 machine, else conflicts
         config.vm.network "forwarded_port", guest: 8200, host: 8200 # vault
         config.vm.network "forwarded_port", guest: 4646, host: 4646 # nomad
+        config.vm.network "forwarded_port", guest: 9702, host: 9702 # waypoint
         config.vm.network "forwarded_port", guest: 8500, host: 8500 # consul
         config.vm.network "forwarded_port", guest: 8600, host: 8600, protocol: 'udp' # consul dns
+        config.vm.network "forwarded_port", guest: 3306, host: 3306 # mysql
         config.vm.network "forwarded_port", guest: 3333, host: 3333 # docsify
         config.vm.network "forwarded_port", guest: 80, host: 80 # traefik dashboard
         config.vm.network "forwarded_port", guest: 8082, host: 8082 # traefik metrics
@@ -131,6 +133,10 @@ Vagrant::configure("2") do |config|
       # install nomad
       # vagrant up --provision-with nomad to only run this on vagrant up
       config.vm.provision "nomad", type: "shell", preserve_order: true, privileged: true, path: "hashicorp/nomad.sh"
+
+      # install waypoint
+      # vagrant up --provision-with waypoint to only run this on vagrant up
+      config.vm.provision "waypoint", type: "shell", preserve_order: true, privileged: true, path: "hashicorp/waypoint.sh"
            
       # docsify
       # vagrant up --provision-with docsify to only run this on vagrant up
@@ -145,6 +151,7 @@ Vagrant::configure("2") do |config|
         echo -e '\e[38;5;198m'"Consul admin console http://localhost:8500"
         echo -e '\e[38;5;198m'"Nomad admin console http://localhost:4646"
         echo -e '\e[38;5;198m'"Traefik dashboard http://traefik.localhost"
+        echo -e '\e[38;5;198m'"Waypoint Server https://${VAGRANT_IP}:9702 with $(cat /home/vagrant/waypoint_user_token.txt)"
       SHELL
 
     end

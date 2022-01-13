@@ -38,16 +38,52 @@ To get started:
 
     The following tools are now accessible from your host machine
 
-    * Vault: http://localhost:8200
+    * Vault: http://localhost:8200 (Get the login token by logging into the guest machine using `vagrant ssh` and running `cat /etc/vault/init.file | grep Root`)
     * Nomad: http://localhost:4646
     * Consul: http://localhost:8500
     * Traefik: http://traefik.localhost
+    * Waypoint: https://${VAGRANT_IP}:9702 (Get the login token by logging into the guest machine using `vagrant ssh` and running `cat /home/vagrant/waypoint_user_token.txt`)
 
     If you'd like to SSH into the HashiQube VM, you can do so by running the following from a terminal window on your host machine.
 
     ```bash
     vagrant ssh
     ```
+
+## Waypoint Notes and Gotchas
+
+Waypoint requires a storage back-end. For this example, I used a MySQL DB as the back-end. This is why we deploy the [`my-sql.nomad`](hashicorp/nomad/jobs/my-sql.nomad) as part of the Nomad bootstrapping process. We also configure a  `host_volume` called `mysql` in `/etc/nomad/server.conf` on the VM. This is referenced by Waypoint when we run the install:
+
+```
+waypoint install -platform=nomad -nomad-dc=dc1 -accept-tos -nomad-host-volume="mysql"
+```
+
+Note how `-nomad-host-volume` points to `mysql`, which we defined in the nomad config.
+
+Another thing worth mentioning is that you may notice after installing Waypoint, you'll see it running successfully in Nomad, but you'll also see the following error in the provisioning output following the Waypoint server install:
+
+```
+Error connecting to server: context deadline exceeded
+```
+
+This is fixed by running:
+
+```
+waypoint server bootstrap -server-addr=${VAGRANT_IP}:9701 -server-tls-skip-verify
+```
+
+I have no idea why we keep getting the first error, but the above command seems to fix things, so yay!
+
+After Waypoint is bootstrapped, you can log in by:
+
+```
+waypoint login \
+    -token=$(cat /home/vagrant/waypoint_user_token.txt) \
+    ${VAGRANT_IP}
+
+waypoint context verify
+waypoint context list
+```
 
 ## Detailed How-To Guides
 
@@ -58,6 +94,9 @@ For detailed tutorials that use this repo, please see the following blog posts o
 
 ## Gotchas
 
+### Unable to access guest machine IP
+
+If you're unable to access the guest machine IP, change the static IP address in line 26 of the [`Vagrantfile`](Vagrantfile), as it may be the result of an IP collision. See [this issue](https://superuser.com/a/1016731) on StackExchange.
 ### DNS Resolution Issues with *.localhost
 
 If you're using a Mac and are running into issues getting your machine to resolve `*.localhost`, try this: 
@@ -111,3 +150,12 @@ If you're using a Mac and are running into issues getting your machine to resolv
     3 packets transmitted, 3 packets received, 0.0% packet loss
     round-trip min/avg/max/stddev = 0.035/0.079/0.111/0.032 ms
     ```
+
+# References
+
+Waypoint references:
+* [Waypoint UI](https://learn.hashicorp.com/tutorials/waypoint/get-started-ui?in=waypoint/get-started-docker)
+* [`waypoint install` command documentation](https://www.waypointproject.io/commands/install)
+* [Waypoint Express Install - Nomad](https://www.waypointproject.io/docs/server/install#nomad-platform)
+* [Deploy sample app to Nomad using Waypoint](https://learn.hashicorp.com/tutorials/waypoint/get-started-nomad?in=waypoint/get-started-nomad)
+* [Waypoint Architecture](https://www.waypointproject.io/docs/internals/execution#most-advanced-cli-remote-server-remote-runner)

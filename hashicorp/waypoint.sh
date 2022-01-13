@@ -25,42 +25,46 @@ function waypoint-install() {
   docker rm waypoint-server
   echo -e '\e[38;5;198m'"++++ Waypoint Server starting"
   export NOMAD_ADDR='http://localhost:4646'
-  waypoint install -platform=nomad -nomad-dc=dc1 -accept-tos
+  waypoint install -platform=nomad -nomad-dc=dc1 -accept-tos -nomad-host-volume="mysql"
+  waypoint server bootstrap -server-addr=${VAGRANT_IP}:9701 -server-tls-skip-verify
   nomad status
-  echo -e '\e[38;5;198m'"++++ Git Clone Waypoint examples"
-  rm -rf /vagrant/hashicorp/waypoint/examples
-  mkdir -p /vagrant/hashicorp/waypoint
-  git clone https://github.com/hashicorp/waypoint-examples.git /vagrant/hashicorp/waypoint/examples
-  cd /vagrant/hashicorp/waypoint/examples/docker/nodejs
-  sed -i '/<\/h1>/a <p>The files are located in \/vagrant\/hashicorp\/waypoint\/examples\/docker\/nodejs, and this file is views/pages/index.ejs<\/p>' /vagrant/hashicorp/waypoint/examples/docker/nodejs/views/pages/index.ejs
-  echo -e '\e[38;5;198m'"++++ Write /vagrant/hashicorp/waypoint/examples/docker/nodejs/waypoint.hcl"
-  rm -rf /vagrant/hashicorp/waypoint/examples/docker/nodejs/waypoint.hcl
-  cat <<EOF | sudo tee /vagrant/hashicorp/waypoint/examples/docker/nodejs/waypoint.hcl
-project = "example-nodejs"
-app "example-nodejs" {
-  build {
-    use "pack" {}
-    registry {
-      use "docker" {
-        image = "nodejs-example"
-        tag = "1"
-        local = true
-      }
-    }
-  }
-  deploy {
-    use "nomad" {
-      datacenter = "dc1"
-    }
-  }
-}
-EOF
-  echo -e '\e[38;5;198m'"++++ Stop the Nodejs example job if running"
-  nomad job stop $(nomad job status | grep running | grep example | cut -d ' ' -f1)
-  waypoint init
-  waypoint up
-  echo -e '\e[38;5;198m'"++++ Waypoint Server https://10.9.99.10:9702 and enter the following Token displayed below"
-  sudo waypoint token new
+#   echo -e '\e[38;5;198m'"++++ Git Clone Waypoint examples"
+#   rm -rf /vagrant/hashicorp/waypoint/examples
+#   mkdir -p /vagrant/hashicorp/waypoint
+#   git clone https://github.com/hashicorp/waypoint-examples.git /vagrant/hashicorp/waypoint/examples
+#   cd /vagrant/hashicorp/waypoint/examples/docker/nodejs
+#   sed -i '/<\/h1>/a <p>The files are located in \/vagrant\/hashicorp\/waypoint\/examples\/docker\/nodejs, and this file is views/pages/index.ejs<\/p>' /vagrant/hashicorp/waypoint/examples/docker/nodejs/views/pages/index.ejs
+#   echo -e '\e[38;5;198m'"++++ Write /vagrant/hashicorp/waypoint/examples/docker/nodejs/waypoint.hcl"
+#   rm -rf /vagrant/hashicorp/waypoint/examples/docker/nodejs/waypoint.hcl
+#   cat <<EOF | sudo tee /vagrant/hashicorp/waypoint/examples/docker/nodejs/waypoint.hcl
+# project = "example-nodejs"
+# app "example-nodejs" {
+#   build {
+#     use "pack" {}
+#     registry {
+#       use "docker" {
+#         image = "nodejs-example"
+#         tag = "1"
+#         local = true
+#       }
+#     }
+#   }
+#   deploy {
+#     use "nomad" {
+#       datacenter = "dc1"
+#     }
+#   }
+# }
+# EOF
+#   echo -e '\e[38;5;198m'"++++ Stop the Nodejs example job if running"
+#   nomad job stop $(nomad job status | grep running | grep example | cut -d ' ' -f1)
+#   waypoint init
+#   waypoint up
+  echo -e '\e[38;5;198m'"++++ Waypoint Server https://${VAGRANT_IP}:9702 and enter the following Token displayed below"
+  export WAYPOINT_USER_TOKEN=$(waypoint user token)
+  echo $WAYPOINT_USER_TOKEN
+  echo $WAYPOINT_USER_TOKEN >> /home/vagrant/waypoint_user_token.txt
+  waypoint context verify
   echo -e '\e[38;5;198m'"++++ Nomad http://localhost:4646"
 
 }
