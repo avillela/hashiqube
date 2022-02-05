@@ -1,4 +1,4 @@
-project = "sample-app"
+project = "sample-proj"
 
 variable "game_2048_docker" {
   type = object({
