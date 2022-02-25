@@ -1,5 +1,7 @@
 # HashiQube with Traefik and Nomad/Vault Integration
 
+## About
+
 This is a fork of the [`servian/hashiqube`](https://github.com/servian/hashiqube) repo.
 
 It includes the following modifications:
@@ -126,7 +128,10 @@ For detailed tutorials that use this repo, please see the following blog posts o
 
 ### Unable to access guest machine IP
 
-If you're unable to access the guest machine IP, change the static IP address in line 26 of the [`Vagrantfile`](Vagrantfile), as it may be the result of an IP collision. See [this issue](https://superuser.com/a/1016731) on StackExchange.
+[Line 26](https://github.com/avillela/hashiqube/blob/72c05a59d41f4c1a3e68d51b1a91839399d086c2/Vagrantfile#L26) in the [`Vagrantfile`](Vagrantfile) from the original HashiQube repo sets the VM IP to `10.9.99.10`; however, I kept getting an error on vagrant up, so I changed the [VM IP on my Vagrantfile](https://github.com/avillela/hashiqube/blob/master/Vagrantfile#L26) to `192.168.56.100`. I’m running this on a Mac, so it may be a Mac-specific issue.
+
+If your Vagrant VM starts up properly, but you find yourself unable to access the Waypoint UI, it might be due to an [IP address collision](https://superuser.com/questions/570261/cant-ping-to-vagrant-box/1016731#1016731) with another device on your network. This happened to me. I was happily using `192.168.56.100`, and then suddenly, it wasn’t working anymore. I had to switch my Vagrantfile to use `192.168.56.192` (I randomly picked it and prayed it would work 😅), and then it was all good.
+
 ### DNS Resolution Issues with *.localhost
 
 If you're using a Mac and are running into issues getting your machine to resolve `*.localhost`, try this: 
