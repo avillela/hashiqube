@@ -137,7 +137,7 @@ cd /vagrant/hashicorp/nomad/jobs;
 
 # Traefik Job and sample app (see: https://learn.hashicorp.com/tutorials/nomad/load-balancing-traefik)
 nomad job run -detach traefik.nomad
-nomad job run -detach my-sql.nomad
+# nomad job run -detach my-sql.nomad
 }
 
 nomad-install
