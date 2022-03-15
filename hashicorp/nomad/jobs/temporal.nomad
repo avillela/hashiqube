@@ -6,6 +6,7 @@ job "temporal" {
 
     network {
       mode = "bridge"
+
       port  "temporal-app"{
         to = 7233
       }
@@ -21,7 +22,6 @@ job "temporal" {
       tags = [
         "traefik.tcp.routers.temporal-app.rule=HostSNI(`*`)",
         "traefik.tcp.routers.temporal-app.entrypoints=grpc",
-        "traefik.tcp.routers.temporal-app.tls=false",
         "traefik.enable=true",
       ]        
 
@@ -46,7 +46,6 @@ job "temporal" {
       driver = "docker"
 
       env {
-        LOG_LEVEL = "debug,info"
         DB = "mysql"
         DB_PORT = 3306
         MYSQL_USER = "root"
@@ -68,6 +67,11 @@ job "temporal" {
         memory = 250
       }
 
+    //   lifecycle {
+    //     hook    = "prestart"
+    //     sidecar = false
+    //   }      
+
       template {
         data = <<EOF
 {{ range service "mysql-server" }}
@@ -80,13 +84,10 @@ EOF
 
       template {
         data   = <<EOF
-
 frontend.keepAliveMaxConnectionAge:
 - value: 5m
 frontend.keepAliveMaxConnectionAgeGrace:
 - value: 70s
-frontend.keepAliveTimeout:
-- value: 30s
 frontend.enableClientVersionCheck:
 - value: true
   constraints: {}
@@ -131,7 +132,7 @@ EOF
       driver = "docker"
 
       env {
-        TEMPORAL_CLI_ADDRESS = "temporal:7233"
+        TEMPORAL_CLI_ADDRESS = "127.0.0.1:7233"
       }
 
       config {
@@ -151,7 +152,7 @@ EOF
       driver = "docker"
 
       env {
-        TEMPORAL_GRPC_ENDPOINT = "temporal:7233"
+        TEMPORAL_GRPC_ENDPOINT = "127.0.0.1:7233"
         TEMPORAL_PERMIT_WRITE_API = true
       }
 
