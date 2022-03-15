@@ -10,23 +10,36 @@ job "traefik" {
       mode = "host"
 
       port "http" {
-        to = 80
         static = 80
       }
 
       port "api" {
-        to = 8080
         static = 8080
       }
 
       port "metrics" {
-        to     = 8082
         static = 8082
+      }
+
+      port "grpc" {
+        static = 7233
       }
 
     }
 
     service {
+      name = "traefik-entrypoint-grpc"
+      port = "grpc"
+
+      check {
+        type     = "tcp"
+        interval = "10s"
+        timeout  = "5s"
+      }
+    }
+
+    service {
+      name = "traefik-dashboard"
       tags = [
         "traefik.enable=true",
         "traefik.http.routers.dashboard.rule=Host(`traefik.localhost`)",
@@ -48,8 +61,8 @@ job "traefik" {
 
       config {
         network_mode = "host"
-        image        = "traefik:v2.4"
-        ports        = ["http", "api", "metrics"]
+        image        = "traefik:v2.6.1"
+        ports        = ["http", "api", "metrics", "grpc"]
 
         volumes = [
           "local/traefik.toml:/etc/traefik/traefik.toml",
@@ -63,6 +76,9 @@ job "traefik" {
     address = ":80"
     [entryPoints.metrics]
     address = ":8082"
+    [entryPoints.grpc]
+    address = ":7233"
+
 
 [api]
     dashboard = true
@@ -76,7 +92,7 @@ job "traefik" {
     exposedByDefault = false
 
     [providers.consulCatalog.endpoint]
-      address = "127.0.0.1:8500"
+      address = "http://localhost:8500"
       scheme  = "http"
 EOF
 

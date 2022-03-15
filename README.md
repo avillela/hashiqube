@@ -81,6 +81,18 @@ To get started:
     vagrant ssh
     ```
 
+6. Install the Nomad and Vault CLIs on your host machine
+
+    If you’re using a Mac, you can install the Vault and Nomad CLIs via Homebrew like this:
+
+    ```bash
+    brew tap hashicorp/tap
+    brew install hashicorp/tap/vault
+    brew install hashicorp/tap/nomad
+    ```
+
+    If you’re not using a Mac, you can find your OS-specific instructions for Vault [here](https://medium.com/r/?url=https%3A%2F%2Fwww.vaultproject.io%2Fdownloads) and for Nomad [here](https://medium.com/r/?url=https%3A%2F%2Fwww.nomadproject.io%2Fdownloads). Note that these are binary installs, and they also contain the CLIs.
+
 ## Waypoint Notes and Gotchas
 
 Waypoint requires a storage back-end. For this example, I used a MySQL DB as the back-end. This is why we deploy the [`my-sql.nomad`](hashicorp/nomad/jobs/my-sql.nomad) as part of the Nomad bootstrapping process. We also configure a  `host_volume` called `mysql` in `/etc/nomad/server.conf` on the VM. This is referenced by Waypoint when we run the install:
@@ -134,7 +146,11 @@ If your Vagrant VM starts up properly, but you find yourself unable to access th
 
 ### DNS Resolution Issues with *.localhost
 
-If you're using a Mac and are running into issues getting your machine to resolve `*.localhost`, try this: 
+If you're using a Mac and are running into issues getting your machine to resolve `*.localhost`, you can try one of two things:
+1. Wildcard resolution with [`dnsmasq`](https://en.wikipedia.org/wiki/Dnsmasq)
+2. Manually add entries to `/etc/hosts`
+
+#### Solution 1: Wildcard Resolution with dnsmasq
 
 1. Install dnsmasq
 
@@ -144,14 +160,14 @@ If you're using a Mac and are running into issues getting your machine to resolv
 
 2. Configure
 
-    Copy the sample config file to /usr/local/etc/dnsmasq.conf, and add address=/localhost/127.0.0.1 to it
+    Copy the sample config file to `/usr/local/etc/dnsmasq.conf`, and add `address=/localhost/127.0.0.1` to it:
 
     ```bash
     cp $(brew list dnsmasq | grep dnsmasq.conf) /usr/local/etc/dnsmasq.conf
     echo "address=/localhost/127.0.0.1" >> /usr/local/etc/dnsmasq.conf
     ```
 
-    Restart dnsmasq services
+    Restart `dnsmasq` services
     
     ```bash
     sudo brew services restart dnsmasq
@@ -167,7 +183,7 @@ If you're using a Mac and are running into issues getting your machine to resolv
 
 3. Test
     
-    Even though foo.localhost doesn’t exist, we should now be able to ping it, since it will map to 127.0.0.1, as per our configs above.
+    Even though foo.localhost doesn’t exist, we should now be able to ping it, since it will map to `127.0.0.1`, as per our configs above.
     
     ```bash
     ping foo.localhost
@@ -185,6 +201,30 @@ If you're using a Mac and are running into issues getting your machine to resolv
     3 packets transmitted, 3 packets received, 0.0% packet loss
     round-trip min/avg/max/stddev = 0.035/0.079/0.111/0.032 ms
     ```
+
+#### Solution 2: Manual entries to `/etc/hosts`
+
+On the most part, `dnsmasq` works pretty well for me; however, it was acting super finnicky when I tried configuring gRPC endpoints on Traefik, so I had to disable it, and instead manully add entries to my `/etc/hosts` file.
+
+1. Disable `dnsmasq`, if it's running:
+
+    ```bash
+    sudo brew services stop dnsmasq
+    ```
+
+2. Append the entries below to your `/etc/hosts` file.
+
+    Take note of the fact that the IP address you're using is the IP address of your HashiQube VM.
+
+    ```bash
+    # For HashiQube
+    192.168.56.192  traefik.localhost
+    192.168.56.192  2048-game.localhost
+    192.168.56.192  temporal-web.localhost
+    192.168.56.192  temporal-app.localhost
+    ```
+
+    >**NOTE**: You'll have to keep manually adding entries to `/etc/hosts` each time you need a specific `*.localhost` entry. For example, if I need `foo.localhost` to resolve, I would add this line to the end of `/etc/hosts`: `192.168.56.192  foo.localhost`
 
 # References
 

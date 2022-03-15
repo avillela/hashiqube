@@ -136,7 +136,7 @@ Vagrant::configure("2") do |config|
 
       # install waypoint
       # vagrant up --provision-with waypoint to only run this on vagrant up
-      config.vm.provision "waypoint", type: "shell", preserve_order: true, privileged: true, path: "hashicorp/waypoint.sh"
+      # config.vm.provision "waypoint", type: "shell", preserve_order: true, privileged: true, path: "hashicorp/waypoint.sh"
            
       # docsify
       # vagrant up --provision-with docsify to only run this on vagrant up
@@ -151,7 +151,7 @@ Vagrant::configure("2") do |config|
         echo -e '\e[38;5;198m'"Consul admin console http://localhost:8500"
         echo -e '\e[38;5;198m'"Nomad admin console http://localhost:4646"
         echo -e '\e[38;5;198m'"Traefik dashboard http://traefik.localhost"
-        echo -e '\e[38;5;198m'"Waypoint Server https://${VAGRANT_IP}:9702 with $(cat /vagrant/hashicorp/waypoint/waypoint_user_token.txt)"
+        # echo -e '\e[38;5;198m'"Waypoint Server https://${VAGRANT_IP}:9702 with $(cat /vagrant/hashicorp/waypoint/waypoint_user_token.txt)"
       SHELL
 
     end
