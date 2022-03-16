@@ -14,7 +14,6 @@ job "temporal" {
       port  "temporal-web"{
         to = 8088
       }
-
     }
 
     service {
@@ -26,7 +25,6 @@ job "temporal" {
       ]        
 
       port = "temporal-app"
-       
     }
 
     service {
@@ -42,7 +40,6 @@ job "temporal" {
     }
 
     task "temporal-app" {
-
       driver = "docker"
 
       env {
@@ -63,14 +60,8 @@ job "temporal" {
       }
 
       resources {
-        #cpu    = 100
         memory = 250
       }
-
-    //   lifecycle {
-    //     hook    = "prestart"
-    //     sidecar = false
-    //   }      
 
       template {
         data = <<EOF
@@ -127,28 +118,7 @@ EOF
       
     }
 
-    task "temporal-admin-tools" {
-
-      driver = "docker"
-
-      env {
-        TEMPORAL_CLI_ADDRESS = "127.0.0.1:7233"
-      }
-
-      config {
-        image = "temporalio/admin-tools:1.15.1"
-        force_pull = true
-      }
-
-      resources {
-        #cpu    = 100
-        memory = 250
-      }
-    }
-
-
     task "temporal-web" {
-
       driver = "docker"
 
       env {
@@ -164,11 +134,10 @@ EOF
       }
 
       resources {
-        #cpu    = 100
         memory = 250
       }
 
     }
-
   }
+  
 }
