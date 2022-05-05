@@ -135,6 +135,8 @@ For detailed tutorials that use this repo, please see the following blog posts o
 * [Just-in-Time Nomad: Running the OpenTelemetry Collector on Hashicorp Nomad with HashiQube](https://adri-v.medium.com/just-in-time-nomad-running-the-opentelemetry-collector-on-hashicorp-nomad-with-hashiqube-4eaf009b8382)
 * [Just-in-Time Nomad: Configuring Nomad/Vault Integration on HashiQube](https://adri-v.medium.com/just-in-time-nomad-configuring-hashicorp-nomad-vault-integration-on-hashiqube-388c14cb070a)
 * [Just-in-Time Nomad: Managing Nomad Application Deployments Using Waypoint on HashiQube](https://faun.pub/just-in-time-nomad-managing-nomad-application-deployments-using-waypoint-on-hashiqube-467952b23689)
+* [Just-in-Time Nomad: Templating HashiCorp Nomad Jobs with Nomad Packs](https://adri-v.medium.com/just-in-time-nomad-templating-hashicorp-nomad-jobs-with-nomad-packs-b4fde6a2b7b8)
+* [Just-in-Time Nomad: Running Temporal on Nomad](https://adri-v.medium.com/just-in-time-nomad-running-temporal-on-nomad-5fee139f37ea)
 
 ## Gotchas
 
@@ -222,15 +224,8 @@ On the most part, `dnsmasq` works pretty well for me; however, it was acting sup
     192.168.56.192  2048-game.localhost
     192.168.56.192  temporal-web.localhost
     192.168.56.192  temporal-app.localhost
+    192.168.56.192  otel-collector-http.localhost
+    192.168.56.192  otel-collector-grpc.localhost
     ```
 
     >**NOTE**: You'll have to keep manually adding entries to `/etc/hosts` each time you need a specific `*.localhost` entry. For example, if I need `foo.localhost` to resolve, I would add this line to the end of `/etc/hosts`: `192.168.56.192  foo.localhost`
-
-# References
-
-Waypoint references:
-* [Waypoint UI](https://learn.hashicorp.com/tutorials/waypoint/get-started-ui?in=waypoint/get-started-docker)
-* [`waypoint install` command documentation](https://www.waypointproject.io/commands/install)
-* [Waypoint Express Install - Nomad](https://www.waypointproject.io/docs/server/install#nomad-platform)
-* [Deploy sample app to Nomad using Waypoint](https://learn.hashicorp.com/tutorials/waypoint/get-started-nomad?in=waypoint/get-started-nomad)
-* [Waypoint Architecture](https://www.waypointproject.io/docs/internals/execution#most-advanced-cli-remote-server-remote-runner)
