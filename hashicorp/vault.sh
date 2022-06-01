@@ -24,7 +24,7 @@ if [ ! -f /usr/local/bin/vault ]; then
 
   echo -e '\e[38;5;198m'"++++ Vault not installed, installing.."
   
-  LATEST_URL="https://releases.hashicorp.com/vault/1.8.5/vault_1.8.5_linux_amd64.zip"
+  LATEST_URL="https://releases.hashicorp.com/vault/1.10.3/vault_1.10.3_linux_amd64.zip"
   wget -q $LATEST_URL -O /tmp/vault.zip
 
   mkdir -p /usr/local/bin

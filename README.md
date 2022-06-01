@@ -15,7 +15,7 @@ It includes the following modifications:
 7. Includes a Waypoint example.
 ## Pre-requisites
 
-* [Oracle VirtualBox](https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwjVuPag0oL0AhXFnrMKHRjODRYYABAAGgJxbg&ohost=www.google.com&cid=CAASEuRoonvAcnwV4Mde6j85eTiOEQ&sig=AOD64_1N8BIxbnQDEjTDYvtzMR78syE9Bg&q&adurl&ved=2ahUKEwiUpe6g0oL0AhVjTd8KHWTvAkEQ0Qx6BAgCEAE) (version 6.1.30 at the time of this writing)
+* [Oracle VirtualBox](https://www.oracle.com/virtualization/solutions/try-oracle-vm-virtualbox) (version 6.1.34 at the time of this writing)
 * [Vagrant](https://www.vagrantup.com/) (version 2.2.19 at the time of this writing)
 * [A GitHub Personal Access Token (PAT)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
 
