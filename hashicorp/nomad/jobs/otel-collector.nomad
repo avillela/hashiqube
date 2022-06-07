@@ -59,11 +59,11 @@ job "otel-collector-gateway" {
       driver = "docker"
 
       config {
-        image = "otel/opentelemetry-collector-contrib:0.40.0"
+        image = "otel/opentelemetry-collector-contrib:0.50.0"
         force_pull = true
 
         entrypoint = [
-          "/otelcontribcol",
+          "/otelcol-contrib",
           "--config=local/config/otel-collector-config.yaml",
         ]
         ports = [
@@ -104,6 +104,11 @@ exporters:
   logging:
     logLevel: debug
 
+  jaeger:
+    endpoint: jaeger-proto.localhost:7233
+    tls:
+      insecure: true    
+
   otlp/hc:
     endpoint: "api.honeycomb.io:443"
     headers: 
@@ -126,7 +131,7 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [logging, otlp/ls, otlp/hc, datadog]
+      exporters: [logging, otlp/ls, otlp/hc, datadog, jaeger]
 EOF
         destination = "local/config/otel-collector-config.yaml"
       }
