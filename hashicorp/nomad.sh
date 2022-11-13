@@ -58,6 +58,14 @@ client {
   }
 }
 
+plugin "docker" {
+  config {
+    auth {
+      config = "/etc/docker/dockercfg.json"
+    }
+  }
+}
+
 plugin "raw_exec" {
   config {
     enabled = true
@@ -67,7 +75,34 @@ plugin "raw_exec" {
 consul {
   address = "10.9.99.10:8500"
 }
+
+vault {
+  enabled = true
+  address = "http://10.9.99.10:8200"
+  task_token_ttl = "1h"
+  create_from_role = "nomad-cluster"
+  token = "${VAULT_TOKEN}"
+  tls_skip_verify = true
+}
+
 EOF
+
+# Base64-encode password
+chmod +x /vagrant/hashicorp/nomad/secret.sh
+cd /vagrant/hashicorp/nomad
+. ./secret.sh
+export GH_AUTH_B64=$(echo "${GH_USER}:${GH_TOKEN}" | tr -d '[[:space:]]' | base64)
+mkdir -p /etc/docker
+cat <<EOF | sudo tee /etc/docker/dockercfg.json
+{
+  "auths" : {
+    "ghcr.io" : {
+      "auth": "${GH_AUTH_B64}"
+    }
+  }
+}
+EOF
+
   echo -e '\e[38;5;198m'"++++ Creating Waypoint host volume /opt/nomad/data/volume/waypoint"
   sudo mkdir -p /opt/nomad/data/volume/waypoint
   sudo chmod -R 777 /opt/nomad
@@ -124,12 +159,13 @@ EOF
   #nomad run --address=http://localhost:4646 countdashboard.nomad
   #nomad plan --address=http://localhost:4646 countdashboardtest.nomad
   #nomad run --address=http://localhost:4646 countdashboardtest.nomad
-  nomad plan --address=http://localhost:4646 fabio.nomad
-  nomad run --address=http://localhost:4646 fabio.nomad
-  nomad plan --address=http://localhost:4646 traefik.nomad
-  nomad run --address=http://localhost:4646 traefik.nomad
-  nomad plan --address=http://localhost:4646 traefik-whoami.nomad
-  nomad run --address=http://localhost:4646 traefik-whoami.nomad
+  # nomad plan --address=http://localhost:4646 fabio.nomad
+  # nomad run --address=http://localhost:4646 fabio.nomad
+  nomad job run -detach traefik.nomad
+  # nomad plan --address=http://localhost:4646 traefik.nomad
+  # nomad run --address=http://localhost:4646 traefik.nomad
+  # nomad plan --address=http://localhost:4646 traefik-whoami.nomad
+  # nomad run --address=http://localhost:4646 traefik-whoami.nomad
   # curl -v -H 'Host: fabio.service.consul' http://${VAGRANT_IP}:9999/
   echo -e '\e[38;5;198m'"++++ Nomad http://localhost:4646"
   echo -e '\e[38;5;198m'"++++ Nomad Documentation http://localhost:3333/#/hashicorp/README?id=nomad"
