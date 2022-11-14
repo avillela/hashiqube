@@ -6,11 +6,11 @@ This is a fork of the updated [`servian/hashiqube`](https://github.com/servian/h
 
 It includes the following modifications:
 
-1. Updates to [traefik.nomad](hashicorp/nomad/jobs/traefik.nomad) to support gRPC endpoints on port `7233`.
-2. Updates to [Traefik](traefik.io) to include support for gRPC. 3. Configures Nomad to give it the ability to pull Docker images from private GitHub repos given a GitHub personal access token (PAT). This is optional (more on that below).
-4. Configures Nomad/Vault integration so that you can use Nomad to pull secrets from Vault. See [`hashicorp/nomad.sh`](hashicorp/nomad.sh) and [`hashicorp/vault.sh`](hashicorp/vault.sh)
-5. Includes an [OpenTelemetry Collector job](hashicorp/nomad/jobs/otel-collector.nomad).
-6. Includes a sample [2048-game](hashicorp/nomad/jobs/2048-game.nomad).
+1. Update [traefik.nomad](hashicorp/nomad/jobs/traefik.nomad) to support gRPC endpoints on port `7233`.
+2. Configure Nomad to allow it to pull Docker images from private GitHub repos given a GitHub personal access token (PAT). (See item #2 in the [Quickstart](#quickstart)).
+4. Configure Nomad/Vault integration so that you can use Nomad to pull secrets from Vault. See [`hashicorp/nomad.sh`](hashicorp/nomad.sh) and [`hashicorp/vault.sh`](hashicorp/vault.sh)
+5. Add an [OpenTelemetry Collector job](hashicorp/nomad/jobs/otel-collector.nomad).
+6. Add a sample [2048-game job](hashicorp/nomad/jobs/2048-game.nomad).
 
 ## !! WARNING !!
 
