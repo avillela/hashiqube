@@ -328,7 +328,7 @@ Vagrant::configure("2") do |config|
         echo -e '\e[38;5;198m'"Vault http://localhost:8200 with $(cat /etc/vault/init.file | grep Root)"
         echo -e '\e[38;5;198m'"Consul http://localhost:8500"
         echo -e '\e[38;5;198m'"Nomad http://localhost:4646"
-        echo -e '\e[38;5;198m'"Fabio http://localhost:9998"
+        echo -e '\e[38;5;198m'"Traefik http://traefik.localhost"
       SHELL
 
     end
