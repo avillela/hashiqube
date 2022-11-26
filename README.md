@@ -64,7 +64,7 @@ To get started:
 
     Once everything is up and running (this will take several minutes, by the way), you'll see this in the tail-end of the startup sequence, to indicate that you are good to go:
 
-    ![image info](images/hashiqube-startup-squence.png)
+    ![image info](images/hashiqube_startup_sequence.png)
 
 5. Access the Hashi tools
 
