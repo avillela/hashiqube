@@ -18,7 +18,8 @@ job "2048-game" {
     }
 
     service {
-      provider = "nomad"
+      // provider = "nomad"
+      // provider = "consul"
       tags = [
         "traefik.http.routers.2048-game.rule=Host(`2048-game.localhost`)",
         "traefik.http.routers.2048-game.entrypoints=web",
@@ -45,7 +46,7 @@ job "2048-game" {
       }
 
       resources {
-        cpu    = 500 # MHz
+        cpu    = 70 # MHz
         memory = 256 # MB
       }
 

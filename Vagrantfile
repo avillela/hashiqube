@@ -95,6 +95,7 @@ Vagrant::configure("2") do |config|
         config.vm.network "forwarded_port", guest: 9011, host: 9011 # consul counter-api-test
         config.vm.network "forwarded_port", guest: 3306, host: 3306 # mysql
         config.vm.network "forwarded_port", guest: 5432, host: 5432 # postgres
+        config.vm.network "forwarded_port", guest: 6379, host: 6379 # redis
         config.vm.network "forwarded_port", guest: 1433, host: 1433 # mssql
         config.vm.network "forwarded_port", guest: 9998, host: 9998 # fabio-dashboard
         config.vm.network "forwarded_port", guest: 9999, host: 9999 # fabiolb
@@ -153,6 +154,8 @@ Vagrant::configure("2") do |config|
         docker.remains_running = true
         docker.has_ssh         = true
         docker.privileged      = true
+        docker.create_args = ['--cpuset-cpus=5']
+        docker.create_args = ['--memory=12g']
         # BUG: https://github.com/hashicorp/vagrant/issues/12602
         # moved to create_args
         # docker.volumes         = ['/sys/fs/cgroup:/sys/fs/cgroup:rw']
