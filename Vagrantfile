@@ -154,7 +154,10 @@ Vagrant::configure("2") do |config|
         docker.remains_running = true
         docker.has_ssh         = true
         docker.privileged      = true
-        docker.create_args = ['--cpuset-cpus=5']
+        # Ref 1: https://stackoverflow.com/questions/47919339/vagrant-with-docker-provider-specifying-cpu-and-memory
+        # Ref 2: https://docs.docker.com/config/containers/resource_constraints/#cpu
+        # docker.create_args = ['--cpuset-cpus=6']
+        docker.create_args = ['--cpus=5']
         docker.create_args = ['--memory=12g']
         # BUG: https://github.com/hashicorp/vagrant/issues/12602
         # moved to create_args
