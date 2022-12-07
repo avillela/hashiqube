@@ -56,6 +56,8 @@ client {
     path      = "/opt/nomad/data/volume/waypoint"
     read_only = false
   }
+  # https://developer.hashicorp.com/nomad/docs/configuration/client#cpu_total_compute
+  cpu_total_compute = 10000
 }
 
 plugin "docker" {
