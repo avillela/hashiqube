@@ -57,7 +57,7 @@ client {
     read_only = false
   }
   # https://developer.hashicorp.com/nomad/docs/configuration/client#cpu_total_compute
-  cpu_total_compute = 10000
+  cpu_total_compute = 4000
 }
 
 plugin "docker" {

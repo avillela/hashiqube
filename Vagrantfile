@@ -10,8 +10,8 @@ fqdn = ENV["fqdn"] || "service.consul"
 
 # https://www.virtualbox.org/manual/ch08.html
 vbox_config = [
-  { '--memory' => '10240' },
-  { '--cpus' => '4' },
+  { '--memory' => '9000' },
+  { '--cpus' => '2' },
   { '--cpuexecutioncap' => '100' },
   { '--biosapic' => 'x2apic' },
   { '--ioapic' => 'on' },
