@@ -70,7 +70,7 @@ To get started:
 
     The following tools are now accessible from your host machine
 
-    * Vault: http://localhost:8200 (Get the login token by logging into the guest machine using `vagrant ssh` and running `cat /etc/vault/init.file | grep Root`)
+    * Vault: http://localhost:8200 (see [Vault Setup](#vault-setup) for more on accessing Vault from the command-line)
     * Nomad: http://localhost:4646
     * Consul: http://localhost:8500
     * Traefik: http://traefik.localhost
@@ -93,6 +93,40 @@ To get started:
 
     If you’re not using a Mac, you can find your OS-specific instructions for Vault [here](https://medium.com/r/?url=https%3A%2F%2Fwww.vaultproject.io%2Fdownloads) and for Nomad [here](https://medium.com/r/?url=https%3A%2F%2Fwww.nomadproject.io%2Fdownloads). Note that these are binary installs, and they also contain the CLIs.
 
+## Vault Setup
+
+To access Vault from the command-line, first, set the `VAULT_ADDR` environment variable:
+
+```bash
+export VAULT_ADDR=http://localhost:8200
+```
+
+Next, set the `VAULT_TOKEN` environment variable. To get this token, you will need to log into the guest machine:
+
+```bash
+vagrant ssh
+```
+
+Once inside the guest machine:
+
+```bash
+cat /etc/vault/init.file | grep Root | rev | cut -d' ' -f1 | rev > /vagrant/hashicorp/token.txt
+```
+
+This saves the token to a text file that is also available on your host machine at `./hashicorp/token.txt`. (And yes, this file is `.gitignored`. 😉)
+
+Now open a terminal on your host machine, and run the following:
+
+```bash
+export VAULT_TOKEN=$(cat hashicorp/token.txt) && \
+rm hashicorp/token.txt
+```
+
+Notice how we deleted `hashicorp/token.txt`...just to be safe. 😉
+
+> **NOTE:** In real life, you would never use the root token to set VAULT_TOKEN. But we’re on our own dev environment, so it’s not the end of the world.
+
+Now you're ready to access Vault from the command line!
 ## Gotchas
 
 ### Exposing gRPC port 7233

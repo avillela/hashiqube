@@ -3,7 +3,7 @@ job "2048-game" {
   datacenters = ["dc1"]
 
   group "game" {
-    count = 1 # number of instances
+    count = 1
 
     // vault {
     //   policies  = ["2048-game"]
@@ -18,8 +18,7 @@ job "2048-game" {
     }
 
     service {
-      // provider = "nomad"
-      // provider = "consul"
+      provider = "nomad"
       tags = [
         "traefik.http.routers.2048-game.rule=Host(`2048-game.localhost`)",
         "traefik.http.routers.2048-game.entrypoints=web",
@@ -46,7 +45,7 @@ job "2048-game" {
       }
 
       resources {
-        cpu    = 70 # MHz
+        cpu    = 500 # MHz
         memory = 256 # MB
       }
 
