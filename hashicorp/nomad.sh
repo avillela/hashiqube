@@ -22,6 +22,7 @@ function nomad-install() {
   yes | sudo docker system prune -a
   yes | sudo docker system prune --volumes
   mkdir -p /etc/nomad
+  sudo mkdir -p /opt/k0s
 cat <<EOF | sudo tee /etc/nomad/server.conf
 data_dir  = "/var/lib/nomad"
 
@@ -56,6 +57,12 @@ client {
     path      = "/opt/nomad/data/volume/waypoint"
     read_only = false
   }
+
+  host_volume "k0s" {
+    path = "/opt/k0s"
+    read_only = false
+  }
+  
   # https://developer.hashicorp.com/nomad/docs/configuration/client#cpu_total_compute
   cpu_total_compute = 2000
   memory_total_mb = 9500
@@ -63,6 +70,7 @@ client {
 
 plugin "docker" {
   config {
+    allow_privileged = true
     auth {
       config = "/etc/docker/dockercfg.json"
     }

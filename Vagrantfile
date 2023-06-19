@@ -111,6 +111,7 @@ Vagrant::configure("2") do |config|
         config.vm.network "forwarded_port", guest: 80, host: 80 # traefik dashboard
         config.vm.network "forwarded_port", guest: 8082, host: 8082 # traefik metrics
         config.vm.network "forwarded_port", guest: 7233, host: 7233 # gRPC (traefik config)
+        config.vm.network "forwarded_port", guest: 6443, host: 6443 # k0s
 
       end
 
