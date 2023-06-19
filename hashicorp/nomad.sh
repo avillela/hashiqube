@@ -74,6 +74,10 @@ plugin "docker" {
     auth {
       config = "/etc/docker/dockercfg.json"
     }
+
+    volumes {
+      enabled = true
+    }
   }
 }
 
@@ -135,36 +139,49 @@ EOF
     sleep 10
     pkill nomad
     pkill nomad
+    echo "Starting Nomad agent..."
     touch /var/log/nomad.log
     nohup nomad agent -config=/etc/nomad/server.conf -dev-connect > /var/log/nomad.log 2>&1 &
     sh -c 'sudo tail -f /var/log/nomad.log | { sed "/node registration complete/ q" && kill $$ ;}'
     nomad server members
     nomad node status
+    echo "Nomad started"
   else
   # if nomad is not installed, download and install
     echo -e '\e[38;5;198m'"++++ Nomad not installed, installing.."
     LATEST_URL=$(curl -sL https://releases.hashicorp.com/nomad/index.json | jq -r '.versions[].builds[].url' | sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n | egrep -v 'rc|beta' | egrep "linux.*$ARCH" | sort -V | tail -n1)
-    wget -q $LATEST_URL -O /tmp/nomad.zip
+    echo "Latest URL: $LATEST_URL"
+    # wget -q $LATEST_URL -O /tmp/nomad.zip
     mkdir -p /usr/local/bin
-    (cd /usr/local/bin && unzip /tmp/nomad.zip)
-    echo -e '\e[38;5;198m'"++++ Installed `/usr/local/bin/nomad version`"
+    # (cd /usr/local/bin && unzip /tmp/nomad.zip)
+    # HACK: Nomad doesn't currently have support for cgroupsns, so Luiz Aoqui created a special build for this (not an official build...yet...maybe?)
+    # You can download the binaries here: https://github.com/hashicorp/nomad/actions/runs/5312709136
+    (cd /usr/local/bin && cp /vagrant/hashiqube/bin/linux-$ARCH/nomad /usr/local/bin/nomad)
+    echo -e '\e[38;5;198m'"++++ Installed `/usr/local/bin/nomad version` from $ARCH"
+    echo "Doing CNI stuff"
     wget -q https://github.com/containernetworking/plugins/releases/download/v1.1.1/cni-plugins-linux-$ARCH-v1.1.1.tgz -O /tmp/cni-plugins.tgz
+    echo "Got CNI plugins"
     mkdir -p /opt/cni/bin
+    echo "Configuring CNI plugins"
     tar -C /opt/cni/bin -xzf /tmp/cni-plugins.tgz
     echo 1 > /proc/sys/net/bridge/bridge-nf-call-arptables
     echo 1 > /proc/sys/net/bridge/bridge-nf-call-ip6tables
     echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
+    echo "Done configuring CNI plugins"
     pkill nomad
     sleep 10
     pkill nomad
     pkill nomad
     touch /var/log/nomad.log
     
+    echo "Starting Nomad agent..."
     nohup nomad agent -config=/etc/nomad/server.conf -dev-connect > /var/log/nomad.log 2>&1 &
     sh -c 'sudo tail -f /var/log/nomad.log | { sed "/node registration complete/ q" && kill $$ ;}'
     nomad server members
     nomad node status
   fi
+
+  echo "Deploying jobs"
   cd /vagrant/hashicorp/nomad/jobs;
   #nomad plan --address=http://localhost:4646 countdashboard.nomad
   #nomad run --address=http://localhost:4646 countdashboard.nomad

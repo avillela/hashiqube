@@ -18,3 +18,4 @@ hashicorp/packer/windows/ansible/connection_plugins/__pycache__**
 **.iso
 secret.sh
 token.txt
+package
