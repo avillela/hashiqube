@@ -151,12 +151,12 @@ EOF
     echo -e '\e[38;5;198m'"++++ Nomad not installed, installing.."
     LATEST_URL=$(curl -sL https://releases.hashicorp.com/nomad/index.json | jq -r '.versions[].builds[].url' | sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n | egrep -v 'rc|beta' | egrep "linux.*$ARCH" | sort -V | tail -n1)
     echo "Latest URL: $LATEST_URL"
-    # wget -q $LATEST_URL -O /tmp/nomad.zip
+    wget -q $LATEST_URL -O /tmp/nomad.zip
     mkdir -p /usr/local/bin
-    # (cd /usr/local/bin && unzip /tmp/nomad.zip)
+    (cd /usr/local/bin && unzip /tmp/nomad.zip)
     # HACK: Nomad doesn't currently have support for cgroupsns, so Luiz Aoqui created a special build for this (not an official build...yet...maybe?)
     # You can download the binaries here: https://github.com/hashicorp/nomad/actions/runs/5312709136
-    (cd /usr/local/bin && cp /vagrant/hashiqube/bin/linux-$ARCH/nomad /usr/local/bin/nomad)
+    # (cd /usr/local/bin && cp /vagrant/hashiqube/bin/linux-$ARCH/nomad /usr/local/bin/nomad)
     echo -e '\e[38;5;198m'"++++ Installed `/usr/local/bin/nomad version` from $ARCH"
     echo "Doing CNI stuff"
     wget -q https://github.com/containernetworking/plugins/releases/download/v1.1.1/cni-plugins-linux-$ARCH-v1.1.1.tgz -O /tmp/cni-plugins.tgz
